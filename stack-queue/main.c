@@ -7,6 +7,7 @@ typedef struct Stack {
     int *arr;
 }Stack;
 
+/* creates a stack and initialize its capacity and all other members like top index, array etc*/
 Stack* createStack(int capacity) {
     Stack* stack = malloc(sizeof(Stack));
     stack->capacity = capacity;
@@ -43,9 +44,25 @@ int pop(Stack** stack) {
     return item;
 }
 
+int top(Stack* stack) {
+    return stack->arr[stack->top];
+}
+
+/* deletes all the resources used by Stack like dynamically alllocate array and the stack itself */
 void delete(Stack* stack) {
     free(stack->arr);
     free(stack);
+}
+
+
+/* creates a stack from array */
+Stack* createStackFromArray(int *arr, int size) {
+    Stack* stack = createStack(2*size);
+    for (int i = 0; i < size; i++) {
+        push(&stack, arr[i]);
+    }
+
+    return stack;
 }
 
 void print(Stack* stack) {
@@ -55,11 +72,11 @@ void print(Stack* stack) {
     while (!isEmpty(stack)) {
         arr[i++] = pop(&stack);
     }
-
     for (int j = stackSize - 1; j >= 0; j--) {
         printf("%d ", arr[j]);
         push(&stack, arr[j]);
     }
+
     printf("\n");
 
     free(arr);
@@ -67,12 +84,22 @@ void print(Stack* stack) {
 
 
 int main() {
-    Stack *stack = createStack(5);
-    push(&stack, 1);
-    push(&stack, 2);
-    /* printf("%d \n", pop(&stack)); */
-    /* printf("%d \n", pop(&stack)); */
+    int n;
+    scanf("%d", &n);
+    int *arr = malloc(sizeof(int) * n);
+    for (int i = 0; i < n; i++) 
+        scanf("%d", &arr[i]);
+    Stack* stack = createStackFromArray(arr, n);
+    print(stack);
+    pop(&stack);
+    pop(&stack);
+    print(stack);
+    printf("%d\n", top(stack));
+    pop(&stack);
+    print(stack);
+
     delete(stack);
+    free(arr);
 
     return 0;
 }
