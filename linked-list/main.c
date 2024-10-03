@@ -1,84 +1,89 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Node {
-    int val;
-    struct Node* next;
-} Node;
+struct node {
+    int value;
+    struct node* next;
+};
 
-Node* createNode(int val) {
-    Node* node = malloc(sizeof(Node));
-    node -> val = val;
-    node -> next = NULL;
-    return node;
+typedef struct node node;
+
+node *create_node(int value) {
+    node* n = malloc(sizeof(node));
+    n->value = value;
+    n->next = NULL;
+    return n;
 }
 
-void insertAtFront(Node** head, int val) {
-    Node* node = createNode(val);
-    node -> next = *head;
-    *head = node;
+int isEmpty(node* head) {
+    return head == NULL;
 }
 
-void insertAtBack(Node** head, int val) {
-    Node* node = createNode(val);
-    if (*head == NULL) {
-        *head = node;
-        return;
+int size(node* head) {
+    int count = 0;
+    while (head != NULL) {
+        count++;
+        head = head->next;
     }
-    
-    Node* temp = *head;
+    return count;
+}
+
+void push_front(node** head, node* node_to_insert) {
+    node_to_insert->next = (*head);
+    (*head) = node_to_insert;
+}
+
+void push_back(node** head, node* node_to_insert) {
+    node* temp = (*head);
     while (temp->next != NULL) {
         temp = temp->next;
     }
 
-    temp->next = node;
+    temp->next = node_to_insert;
 }
 
-void insert(Node** head, int val, int idx) {
-    /*
-     * if list is empty and idx == 0 then insert node in first pos
-     * otherwise just return
-    */
-    if (*head == NULL) {
-        if (idx == 0) {
-            Node* node = createNode(val);
-            *head = node;
-        }
-        return;
+int pop_front(node** head) {
+    if (isEmpty((*head))) {
+        printf("list is empty!\n");
+        exit(1);
     }
 
-    /*
-     * reach the index before idx and insert the node;
-    */
-    int cnt = 0;
-    Node* node = *head;
-    while (cnt != idx - 1) {
-        if (node == NULL) {
-            return;
-        }
-        node = node->next;
-        cnt++;
-    }
-
-    Node* temp = createNode(val);
-    temp -> next = node->next;
-    node -> next = temp;
+    int item = (*head)->value;
+    node* temp =  (*head);
+    (*head) = (*head)->next;
+    free(temp);
+    return item;
 }
 
-void printList(Node** head) {
-    Node *node = *head;
-    while (node != NULL) {
-        printf("%d ", node -> val);
-        node = node -> next;
+void print_list(node* head) {
+    node* temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->value);
+        temp = temp->next;
     }
     printf("\n");
 }
 
+void delete(node* head) {
+    while (head != NULL) {
+        node* next_node =  head->next;
+        free(head);
+        head = next_node;
+    }
+}
+
 int main() {
-    Node* head = NULL;
-    insert(&head, 1, 0);
-    insert(&head, 2, 1);
-    printList(&head);
-    
+    node* head = NULL;
+    push_front(&head, create_node(3));
+    push_front(&head, create_node(2));
+    push_front(&head, create_node(1));
+    push_back(&head, create_node(4));
+    print_list(head);
+    printf("%d\n", size(head));
+    pop_front(&head);
+    print_list(head);
+    printf("%d\n", size(head));
+
+    delete(head);
     return 0;
 }
